@@ -215,7 +215,7 @@ def calculate_weight(knn_graph_map: dict, knn_model_map: dict) -> dict:
     return weights
 
 
-def preprocessing(model: torch.nn.Module, data_loader: DataLoader, device: str = 'cpu') -> Tuple[dict, dict, dict]:
+def preprocessing(model: torch.nn.Module, data_loader: DataLoader, device: str = 'cpu', retrain: bool = False) -> Tuple[dict, dict, dict]:
     """
     Construct KNN models and KNN graphs for each layer in the model.
     Then calculate the weights for each (layer, class) pair based on the KNN graphs.
@@ -223,6 +223,13 @@ def preprocessing(model: torch.nn.Module, data_loader: DataLoader, device: str =
         knn_graph_map: Dictionary mapping layer names to their KNN graphs.
         weights: Dictionary mapping (layer_name, class_label) to their weights.
     """
+    if not retrain and os.path.exists('./cache/knn_graph_map.pt') and os.path.exists('./cache/knn_model_map.pt') and os.path.exists('./cache/weights.pt'):
+        print("Loading saved KNN graphs and weights...")
+        knn_graph_map = torch.load('./cache/knn_graph_map.pt', weights_only=False)
+        knn_model_map = torch.load('./cache/knn_model_map.pt', weights_only=False)
+        weights = torch.load('./cache/weights.pt', weights_only=False)
+        return knn_graph_map, knn_model_map, weights
+
     activations, labels = get_dataset_activations(model, data_loader, device)
     knn_graph_map = {}
     knn_model_map = {}
@@ -266,9 +273,9 @@ def calculate_cumulative_topological_distance(model: torch.nn.Module, data_loade
 
 
     print("Calculating CTD values...")
-    for layer_name, activation in all_activations.items():
+    for layer_name in query.keys():
         if 'conv' in layer_name or 'linear' in layer_name:
-            activation = activation.view(activation.size(0), -1)
+            # activation = activation.view(activation.size(0), -1)
             knn = knn_map[layer_name]
             for i in tqdm(range(query[layer_name].size(0))):
                 q = query[layer_name][i].view(1, -1)

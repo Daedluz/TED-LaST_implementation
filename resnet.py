@@ -1,4 +1,7 @@
 '''
+This is the implementation copied from https://github.com/Unispac/Circumventing-Backdoor-Defenses/blob/master/utils/resnet.py
+I added ResNet10
+
 Properly implemented ResNet-s for CIFAR10 as described in paper [1].
 The implementation and structure of this file is hugely influenced by [2]
 which is implemented for ImageNet and doesn't have option A for identity.

@@ -41,6 +41,7 @@ anomaly_labels = [1] * len(ctd_poisoned_clusters[0]) + [0] * len(ctd_clean_clust
 auc = roc_auc_score(anomaly_labels, anomaly_scores)
 print("ROC AUC:", auc)
 
+# Plot ROC curve
 fpr, tpr, thresholds = roc_curve(anomaly_labels, anomaly_scores)
 auc_value = roc_auc_score(anomaly_labels, anomaly_scores)
 
